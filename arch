@@ -1,0 +1,60 @@
+#!/bin/sh
+
+loadkeys es
+timedatectl set-ntp true
+#lsblk
+#cfdisk /dev/DISCO
+#mkfs.fat -F 32 /dev/EFI
+#mkfs.btrfs -f /dev/SAL
+#mount /dev/SAL /mnt
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd networkmanager wpa_supplicant pipewire sudo git curl neovim dialog zsh zsh-syntax-highlighting dash dosfstools ntfs-3g btrfs-progs os-prober
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+mkdir /boot/efi
+mount /dev/EFI /boot/efi
+
+disp="$1"
+pers="$2"
+
+echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+echo "LANG=es_ES.UTF-8" > /etc/locale.conf
+echo "KEYMAP=es" >> /etc/vconsole.conf
+export LANG=es_ES.UTF-8
+ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
+hwclock --systohc
+echo "$disp" >> /etc/hostname
+echo "127.0.0.1    localhost" >> /etc/hosts
+echo "::1          localhost" >> /etc/hosts
+echo "127.0.1.1    $disp.localdomain    localhost" >> /etc/hosts
+useradd -mG wheel,storage,power,audio,video "$2"
+systemctl enable dhcpcd.service
+systemctl enable NetworkManager.service
+sudo pacman -S grub efibootmgr linux-headers openssh
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+
+passwd
+passwd "$2"
+EDITOR=nvim visudo
+exit
+umount -a
+reboot
+sudo pacman -S nvidia-open nvidia-utils
+sudo pacman -S xorg xorg-xinit picom lxappearance xdg-user-dirs
+git clone https://aur.archlinux.org/paru.git
+git clone https://github.com/pablofs02/st
+git clone https://github.com/pablofs02/dwm
+git clone https://github.com/pablofs02/dmenu
+cd paru
+makepkg -si PKGBUILD
+cd ../st
+sudo make install
+cd ../dwm
+sudo make install
+cd ../dmenu
+sudo make install
+cd
+rm -rf st dmenu dwm paru
+
+sudo pacman -Syyu
