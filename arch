@@ -1,60 +1,46 @@
-#!/bin/sh
+#!/bin/bash
 
-loadkeys es
-timedatectl set-ntp true
+sistema="$1"
+arranque="$2"
+usuario="$3"
+nombre="$4"
+
+#loadkeys es
 #lsblk
 #cfdisk /dev/DISCO
-#mkfs.fat -F 32 /dev/EFI
-#mkfs.btrfs -f /dev/SAL
-#mount /dev/SAL /mnt
-pacstrap /mnt base base-devel linux linux-firmware dhcpcd networkmanager wpa_supplicant pipewire sudo git curl neovim dialog zsh zsh-syntax-highlighting dash dosfstools ntfs-3g btrfs-progs os-prober
-genfstab -U /mnt >> /mnt/etc/fstab
-arch-chroot /mnt
-mkdir /boot/efi
-mount /dev/EFI /boot/efi
 
-disp="$1"
-pers="$2"
-
-echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
-locale-gen
-echo "LANG=es_ES.UTF-8" > /etc/locale.conf
-echo "KEYMAP=es" >> /etc/vconsole.conf
+timedatectl set-ntp true
 export LANG=es_ES.UTF-8
-ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
-hwclock --systohc
-echo "$disp" >> /etc/hostname
-echo "127.0.0.1    localhost" >> /etc/hosts
-echo "::1          localhost" >> /etc/hosts
-echo "127.0.1.1    $disp.localdomain    localhost" >> /etc/hosts
-useradd -mG wheel,storage,power,audio,video "$2"
-systemctl enable dhcpcd.service
-systemctl enable NetworkManager.service
-sudo pacman -S grub efibootmgr linux-headers openssh
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-grub-mkconfig -o /boot/grub/grub.cfg
+umount -a &>/dev/null
+pacman -Syy >/dev/null
 
-passwd
-passwd "$2"
-EDITOR=nvim visudo
-exit
-umount -a
-reboot
-sudo pacman -S nvidia-open nvidia-utils
-sudo pacman -S xorg xorg-xinit picom lxappearance xdg-user-dirs
-git clone https://aur.archlinux.org/paru.git
-git clone https://github.com/pablofs02/st
-git clone https://github.com/pablofs02/dwm
-git clone https://github.com/pablofs02/dmenu
-cd paru
-makepkg -si PKGBUILD
-cd ../st
-sudo make install
-cd ../dwm
-sudo make install
-cd ../dmenu
-sudo make install
-cd
-rm -rf st dmenu dwm paru
+echo -e "\x1b[31mADVERTENCIA:\x1b[m Para instalar el sistema operativo correctamente es necesario tener conexión a internet."
 
-sudo pacman -Syyu
+[ -z "$arranque" ] && echo "Partición EFI no especificado" && exit
+[ -z "$sistema" ] && echo "Partición Linux no especificada" && exit
+
+echo -e "\x1b[35m### INICIANDO INSTALACIÓN ###\x1b[m"
+
+echo -e "\x1b[34m>>> CREANDO SISTEMA DE ARCHIVOS\x1b[m"
+#mkfs.fat -F 32 "/dev/$arranque"
+mkfs.btrfs -f "/dev/$sistema" >/dev/null
+
+echo -e "\x1b[34m>>> MONTANDO PARTICIÓN\x1b[m"
+mount "/dev/$sistema" /mnt >/dev/null
+
+echo -e "\x1b[34m>>> INSTALANDO ÚTILES BASE\x1b[m"
+pacstrap -Kc /mnt base base-devel &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO KERNEL LINUX\x1b[m"
+pacstrap -Kc /mnt linux linux-firmware &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO SERVICIOS DE RED\x1b[m"
+pacstrap -Kc /mnt dhcpcd networkmanager wpa_supplicant &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO HERRAMIENTAS ESENCIALES\x1b[m"
+pacstrap -Kc /mnt sudo git curl neovim &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO SISTEMAS DE ARCHIVOS\x1b[m"
+pacstrap -Kc /mnt btrfs-progs dosfstools ntfs-3g os-prober &>/dev/null
+
+echo -e "\x1b[34m>>> GENERANDO TABLA DEL SISTEMA DE ARCHIVO\x1b[m"
+genfstab -U /mnt >> /mnt/etc/fstab
+
+cp ./conf /mnt/instalador
+arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"

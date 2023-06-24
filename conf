@@ -1,0 +1,107 @@
+#!/bin/bash
+
+arranque="$1"
+usuario="$2"
+dispositivo="$3"
+
+echo -e "\x1b[34m>>> MONTANDO SISTEMA DE ARRANQUE\x1b[m"
+mkdir -p /mnt/boot/efi
+mount "/dev/$arranque" /boot/efi
+
+echo -e "\x1b[34m>>> CONFIGURACIÓN BASE\x1b[m" # cambiar a más específicos
+echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen >/dev/null
+echo "LANG=es_ES.UTF-8" > /etc/locale.conf
+echo "KEYMAP=es" >> /etc/vconsole.conf
+ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
+hwclock --systohc
+echo "$dispositivo" > /etc/hostname
+echo "127.0.0.1    localhost
+::1          localhost
+127.0.1.1    $dispositivo.localdomain    localhost" >> /etc/hosts
+useradd -mG wheel,storage,power,audio,video "$2"
+echo -e "\x1b[33mIntroduzca la contraseña para el administrador\x1b[m"
+passwd
+echo -e "\x1b[33mIntroduzca la contraseña para $usuario\x1b[m"
+passwd "$usuario"
+systemctl enable dhcpcd.service &>/dev/null
+systemctl enable NetworkManager.service &>/dev/null
+
+echo -e "\x1b[34m>>> INSTALANDO GESTOR DE ARRANQUE\x1b[m"
+pacman -S --noconfirm grub efibootmgr linux-headers >/dev/null
+#grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+#grub-mkconfig -o /boot/grub/grub.cfg
+echo -e "\x1b[34m>>> INSTALANDO CONTROLADORES\x1b[m"
+pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO SERVIDOR GRÁFICO\x1b[m"
+pacman -S --noconfirm xorg xorg-xinit picom lxappearance xdg-user-dirs >/dev/null
+
+echo -e "\x1b[34m>>> CONFIGURANDO SONIDO\x1b[m"
+pacman -S --noconfirm pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber >/dev/null
+systemctl --user enable pipewire.socket &>/dev/null
+systemctl --user enable pipewire-pulse.socket &>/dev/null
+systemctl --user enable wireplumber.service &>/dev/null
+
+echo -e "\x1b[34m>>> INSTALANDO FIREFOX\x1b[m"
+pacman -S --noconfirm firefox-i18n-es-es >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO SHELL\x1b[m"
+pacman -S --noconfirm zsh zsh-syntax-highlighting dash >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO PROGRAMAS DEL SISTEMA\x1b[m"
+pacman -S --noconfirm alsa-utils brightnessctl clipmenu dunst >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO PROGRAMAS MULTIMEDIA\x1b[m"
+pacman -S --noconfirm fzf exa scrot socat sxhkd sxiv tree mpv xclip xwallpaper >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO PDFS\x1b[m"
+pacman -S --noconfirm zathura zathura-pdf-mupdf >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO COMPRESORES\x1b[m"
+pacman -S --noconfirm vorbis-tools unrar unzip zip tar >/dev/null
+
+echo -e "\x1b[34m>>> INSTALANDO ?????\x1b[m"
+pacman -S --noconfirm gparted htop inetutils net-tools newsboat perl-image-exiftool openssh >/dev/null
+echo -e "\x1b[34m>>> CONFIGURANDO SHELL\x1b[m"
+ln -sf /bin/dash /bin/sh
+chsh -s /usr/bin/zsh >/dev/null
+echo -e "\x1b[33mIntroduzca de nuevo la contraseña de $usuario\x1b[m"
+su "$usuario" -c "chsh -s /usr/bin/zsh"
+
+echo -e "\x1b[34m>>> INSTALANDO FUENTES\x1b[m"
+pacman -S --noconfirm noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO GESTOR DE CLAVES\x1b[m"
+pacman -S --noconfirm gnome-keyring seahorse >/dev/null
+echo -e "\x1b[34m>>> INSTALANDO RUST\x1b[m"
+pacman -S --noconfirm rustup >/dev/null
+rustup default stable &>/dev/null
+#echo -e "\x1b[34m>>> INSTALANDO EDITORES\x1b[m"
+#pacman -S --noconfirm gimp blender inkscape >/dev/null
+#echo -e "\x1b[34m>>> INSTALANDO PAMPLINAS\x1b[m"
+#pacman -S --noconfirm termdown cmatrix >/dev/null
+# dbus-python para script
+
+echo -e "\x1b[34m>>> BAJANDO REPOSITORIOS PROPIOS\x1b[m"
+git clone https://aur.archlinux.org/paru.git &>/dev/null
+git clone https://github.com/pablofs02/st &>/dev/null
+git clone https://github.com/pablofs02/dwm &>/dev/null
+git clone https://github.com/pablofs02/dmenu &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\x1b[m"
+cd paru
+makepkg -si PKGBUILD &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO TERMINAL (st)\x1b[m"
+cd ../st
+make install &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\x1b[m"
+cd ../dwm
+make install &>/dev/null
+echo -e "\x1b[34m>>> INSTALANDO MENÚ (dmenu)\x1b[m"
+cd ../dmenu
+make install &>/dev/null
+cd
+rm -rf st dmenu dwm paru
+
+rm /instalador
+
+echo -e "\x1b[35m### INSTALACIÓN FINALIZADA ###\x1b[m"
+echo -e "> arch-chroot /mnt
+> EDITOR=nvim visudo   (permitir el comando sudo)
+> exit
+> umount /mnt
+> reboot
+\x1b[31mLo más probable es que haga otro script para configurar estos archivos sensibles\x1b[m"
