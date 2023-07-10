@@ -2,15 +2,17 @@
 
 . opciones
 
+echo "$bluetooth"
+
 arranque="$1"
 usuario="$2"
 dispositivo="$3"
 
-printf "\033[34m>>> MONTANDO SISTEMA DE ARRANQUE\033[m"
+printf "\033[34m>>> MONTANDO SISTEMA DE ARRANQUE\033[m\n"
 mkdir -p /mnt/boot/efi
 mount "/dev/$arranque" /boot/efi
 
-printf "\033[34m>>> CONFIGURACIÓN BASE\033[m" # cambiar a más específicos
+printf "\033[34m>>> CONFIGURACIÓN BASE\033[m\n" # cambiar a más específicos
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen >/dev/null
 echo "LANG=es_ES.UTF-8" > /etc/locale.conf
@@ -22,54 +24,54 @@ echo "127.0.0.1    localhost
 ::1          localhost
 127.0.1.1    $dispositivo.localdomain    localhost" >> /etc/hosts
 useradd -mG wheel,storage,power,audio,video "$2"
-printf "\033[33mIntroduzca la contraseña para el administrador\033[m"
+printf "\033[33mIntroduzca la contraseña para el administrador\033[m\n"
 passwd
-printf "\033[33mIntroduzca la contraseña para $usuario\033[m"
+printf "\033[33mIntroduzca la contraseña para $usuario\033[m\n"
 passwd "$usuario"
 systemctl enable dhcpcd.service &>/dev/null
 systemctl enable NetworkManager.service &>/dev/null
 
-printf "\033[34m>>> INSTALANDO GESTOR DE ARRANQUE\033[m"
+printf "\033[34m>>> INSTALANDO GESTOR DE ARRANQUE\033[m\n"
 pacman -S --noconfirm grub efibootmgr linux-headers >/dev/null
 #grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 #grub-mkconfig -o /boot/grub/grub.cfg
-printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m"
+printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m\n"
 pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null
-printf "\033[34m>>> INSTALANDO SERVIDOR GRÁFICO\033[m"
+printf "\033[34m>>> INSTALANDO SERVIDOR GRÁFICO\033[m\n"
 pacman -S --noconfirm xorg xorg-xinit picom lxappearance xdg-user-dirs >/dev/null
 
-printf "\033[34m>>> CONFIGURANDO SONIDO\033[m"
+printf "\033[34m>>> CONFIGURANDO SONIDO\033[m\n"
 pacman -S --noconfirm pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber >/dev/null
 systemctl --user enable pipewire.socket &>/dev/null
 systemctl --user enable pipewire-pulse.socket &>/dev/null
 systemctl --user enable wireplumber.service &>/dev/null
 
-printf "\033[34m>>> INSTALANDO FIREFOX\033[m"
+printf "\033[34m>>> INSTALANDO FIREFOX\033[m\n"
 pacman -S --noconfirm firefox-i18n-es-es >/dev/null
-printf "\033[34m>>> INSTALANDO SHELL\033[m"
+printf "\033[34m>>> INSTALANDO SHELL\033[m\n"
 pacman -S --noconfirm zsh zsh-syntax-highlighting dash >/dev/null
-printf "\033[34m>>> INSTALANDO PROGRAMAS DEL SISTEMA\033[m"
+printf "\033[34m>>> INSTALANDO PROGRAMAS DEL SISTEMA\033[m\n"
 pacman -S --noconfirm alsa-utils brightnessctl clipmenu dunst >/dev/null
-printf "\033[34m>>> INSTALANDO PROGRAMAS MULTIMEDIA\033[m"
+printf "\033[34m>>> INSTALANDO PROGRAMAS MULTIMEDIA\033[m\n"
 pacman -S --noconfirm fzf exa scrot socat sxhkd sxiv tree mpv xclip xwallpaper >/dev/null
-printf "\033[34m>>> INSTALANDO PDFS\033[m"
+printf "\033[34m>>> INSTALANDO PDFS\033[m\n"
 pacman -S --noconfirm zathura zathura-pdf-mupdf jq >/dev/null
-printf "\033[34m>>> INSTALANDO COMPRESORES\033[m"
+printf "\033[34m>>> INSTALANDO COMPRESORES\033[m\n"
 pacman -S --noconfirm vorbis-tools unrar unzip zip tar >/dev/null
 
-printf "\033[34m>>> INSTALANDO ?????\033[m"
+printf "\033[34m>>> INSTALANDO ?????\033[m\n"
 pacman -S --noconfirm gparted htop inetutils net-tools newsboat perl-image-exiftool openssh >/dev/null
-printf "\033[34m>>> CONFIGURANDO SHELL\033[m"
+printf "\033[34m>>> CONFIGURANDO SHELL\033[m\n"
 ln -sf /bin/dash /bin/sh
 chsh -s /usr/bin/zsh >/dev/null
-printf "\033[33mIntroduzca de nuevo la contraseña de $usuario\033[m"
+printf "\033[33mIntroduzca de nuevo la contraseña de $usuario\033[m\n"
 su "$usuario" -c "chsh -s /usr/bin/zsh"
 
-printf "\033[34m>>> INSTALANDO FUENTES\033[m"
+printf "\033[34m>>> INSTALANDO FUENTES\033[m\n"
 pacman -S --noconfirm noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation >/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m"
+printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 pacman -S --noconfirm gnome-keyring seahorse >/dev/null
-printf "\033[34m>>> INSTALANDO RUST\033[m"
+printf "\033[34m>>> INSTALANDO RUST\033[m\n"
 pacman -S --noconfirm rustup >/dev/null
 rustup default stable &>/dev/null
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
@@ -78,21 +80,21 @@ rustup default stable &>/dev/null
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
-printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m"
+printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m\n"
 git clone https://aur.archlinux.org/paru.git &>/dev/null
 git clone https://github.com/pablofs02/st &>/dev/null
 git clone https://github.com/pablofs02/dwm &>/dev/null
 git clone https://github.com/pablofs02/dmenu &>/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m"
+printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m\n"
 cd paru
 makepkg -si PKGBUILD &>/dev/null
-printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m"
+printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m\n"
 cd ../st
 make install &>/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m"
+printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m\n"
 cd ../dwm
 make install &>/dev/null
-printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m"
+printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m\n"
 cd ../dmenu
 make install &>/dev/null
 cd
@@ -100,10 +102,10 @@ rm -rf st dmenu dwm paru
 
 rm /instalador
 
-printf "\033[35m### INSTALACIÓN FINALIZADA ###\033[m"
+printf "\033[35m### INSTALACIÓN FINALIZADA ###\033[m\n"
 printf "> arch-chroot /mnt
 > EDITOR=nvim visudo   (permitir el comando sudo)
 > exit
 > umount /mnt
 > reboot
-\033[31mLo más probable es que haga otro script para configurar estos archivos sensibles\033[m"
+\033[31mLo más probable es que haga otro script para configurar estos archivos sensibles\033[m\n"
