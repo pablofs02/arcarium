@@ -41,5 +41,5 @@ pacstrap -K /mnt btrfs-progs dosfstools ntfs-3g os-prober
 printf "\033[34m>>> GENERANDO TABLA DEL SISTEMA DE ARCHIVO\033[m [8/9]\n"
 genfstab -U /mnt >> /mnt/etc/fstab
 
-cp ./extra/base /mnt/instalador
+cp ./basis /mnt/instalador
 arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"

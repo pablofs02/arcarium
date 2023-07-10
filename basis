@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. opciones
+. config
 
 echo "$bluetooth"
 
@@ -14,7 +14,7 @@ mount "/dev/$arranque" /boot/efi
 
 printf "\033[34m>>> CONFIGURACIÓN BASE\033[m\n" # cambiar a más específicos
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
-locale-gen >/dev/null
+locale-gen
 echo "LANG=es_ES.UTF-8" > /etc/locale.conf
 echo "KEYMAP=es" >> /etc/vconsole.conf
 ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
@@ -32,35 +32,35 @@ systemctl enable dhcpcd.service &>/dev/null
 systemctl enable NetworkManager.service &>/dev/null
 
 printf "\033[34m>>> INSTALANDO GESTOR DE ARRANQUE\033[m\n"
-pacman -S --noconfirm grub efibootmgr linux-headers >/dev/null
+pacman -S --noconfirm grub efibootmgr linux-headers
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m\n"
-pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null
+pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime
 printf "\033[34m>>> INSTALANDO SERVIDOR GRÁFICO\033[m\n"
-pacman -S --noconfirm xorg xorg-xinit picom lxappearance xdg-user-dirs >/dev/null
+pacman -S --noconfirm xorg xorg-xinit picom lxappearance xdg-user-dirs
 
 printf "\033[34m>>> CONFIGURANDO SONIDO\033[m\n"
-pacman -S --noconfirm pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber >/dev/null
+pacman -S --noconfirm pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
 #systemctl --user enable pipewire.socket &>/dev/null
 #systemctl --user enable pipewire-pulse.socket &>/dev/null
 #systemctl --user enable wireplumber.service &>/dev/null
 
 printf "\033[34m>>> INSTALANDO FIREFOX\033[m\n"
-pacman -S --noconfirm firefox-i18n-es-es >/dev/null
+pacman -S --noconfirm firefox-i18n-es-es
 printf "\033[34m>>> INSTALANDO SHELL\033[m\n"
-pacman -S --noconfirm zsh zsh-syntax-highlighting dash >/dev/null
+pacman -S --noconfirm zsh zsh-syntax-highlighting dash
 printf "\033[34m>>> INSTALANDO PROGRAMAS DEL SISTEMA\033[m\n"
-pacman -S --noconfirm alsa-utils brightnessctl clipmenu dunst >/dev/null
+pacman -S --noconfirm alsa-utils brightnessctl clipmenu dunst
 printf "\033[34m>>> INSTALANDO PROGRAMAS MULTIMEDIA\033[m\n"
-pacman -S --noconfirm fzf exa scrot socat sxhkd sxiv tree mpv xclip xwallpaper >/dev/null
+pacman -S --noconfirm fzf exa scrot socat sxhkd sxiv tree mpv xclip xwallpaper
 printf "\033[34m>>> INSTALANDO PDFS\033[m\n"
-pacman -S --noconfirm zathura zathura-pdf-mupdf jq >/dev/null
+pacman -S --noconfirm zathura zathura-pdf-mupdf jq
 printf "\033[34m>>> INSTALANDO COMPRESORES\033[m\n"
-pacman -S --noconfirm vorbis-tools unrar unzip zip tar >/dev/null
+pacman -S --noconfirm vorbis-tools unrar unzip zip tar
 
 printf "\033[34m>>> INSTALANDO ?????\033[m\n"
-pacman -S --noconfirm gparted htop inetutils net-tools newsboat perl-image-exiftool openssh >/dev/null
+pacman -S --noconfirm gparted htop inetutils net-tools newsboat perl-image-exiftool openssh
 printf "\033[34m>>> CONFIGURANDO SHELL\033[m\n"
 ln -sf /bin/dash /bin/sh
 chsh -s /usr/bin/zsh >/dev/null
@@ -68,12 +68,12 @@ printf "\033[33mIntroduzca de nuevo la contraseña de $usuario\033[m\n"
 su "$usuario" -c "chsh -s /usr/bin/zsh"
 
 printf "\033[34m>>> INSTALANDO FUENTES\033[m\n"
-pacman -S --noconfirm noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation >/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
-pacman -S --noconfirm gnome-keyring seahorse >/dev/null
+pacman -S --noconfirm noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation
+#printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
+#pacman -S --noconfirm gnome-keyring seahorse
 printf "\033[34m>>> INSTALANDO RUST\033[m\n"
-pacman -S --noconfirm rustup >/dev/null
-rustup default stable &>/dev/null
+pacman -S --noconfirm rustup
+rustup default stable
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
 #printf "\033[34m>>> INSTALANDO PAMPLINAS\033[m"
