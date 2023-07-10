@@ -11,8 +11,6 @@ nombre="$4"
 
 timedatectl set-ntp true
 export LANG=es_ES.UTF-8
-umount -a &>/dev/null
-pacman -Syy >/dev/null
 
 printf "\033[31mADVERTENCIA:\033[m Para instalar el sistema operativo correctamente es necesario tener conexión a internet.\n"
 
