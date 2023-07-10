@@ -1,0 +1,8 @@
+- Tipos por defecto
+iwctl --passphrase [contraseña] station wlan0 connect [wifi]
+
+pacman -Sy git
+git clone https://github.com/pablofs02/instalador
+cd instalador
+./arch "sa_sistema" "sa_arranque" "nombre_usuario" "nombre_sistema"
+lsblk -f
