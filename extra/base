@@ -33,8 +33,8 @@ systemctl enable NetworkManager.service &>/dev/null
 
 printf "\033[34m>>> INSTALANDO GESTOR DE ARRANQUE\033[m\n"
 pacman -S --noconfirm grub efibootmgr linux-headers >/dev/null
-#grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-#grub-mkconfig -o /boot/grub/grub.cfg
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
 printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m\n"
 pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null
 printf "\033[34m>>> INSTALANDO SERVIDOR GRÁFICO\033[m\n"
@@ -42,9 +42,9 @@ pacman -S --noconfirm xorg xorg-xinit picom lxappearance xdg-user-dirs >/dev/nul
 
 printf "\033[34m>>> CONFIGURANDO SONIDO\033[m\n"
 pacman -S --noconfirm pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber >/dev/null
-systemctl --user enable pipewire.socket &>/dev/null
-systemctl --user enable pipewire-pulse.socket &>/dev/null
-systemctl --user enable wireplumber.service &>/dev/null
+#systemctl --user enable pipewire.socket &>/dev/null
+#systemctl --user enable pipewire-pulse.socket &>/dev/null
+#systemctl --user enable wireplumber.service &>/dev/null
 
 printf "\033[34m>>> INSTALANDO FIREFOX\033[m\n"
 pacman -S --noconfirm firefox-i18n-es-es >/dev/null
@@ -80,25 +80,25 @@ rustup default stable &>/dev/null
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
-printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m\n"
-git clone https://aur.archlinux.org/paru.git &>/dev/null
-git clone https://github.com/pablofs02/st &>/dev/null
-git clone https://github.com/pablofs02/dwm &>/dev/null
-git clone https://github.com/pablofs02/dmenu &>/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m\n"
-cd paru
-makepkg -si PKGBUILD &>/dev/null
-printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m\n"
-cd ../st
-make install &>/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m\n"
-cd ../dwm
-make install &>/dev/null
-printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m\n"
-cd ../dmenu
-make install &>/dev/null
-cd
-rm -rf st dmenu dwm paru
+#printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m\n"
+#git clone https://aur.archlinux.org/paru.git &>/dev/null
+#git clone https://github.com/pablofs02/st &>/dev/null
+#git clone https://github.com/pablofs02/dwm &>/dev/null
+#git clone https://github.com/pablofs02/dmenu &>/dev/null
+#printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m\n"
+#cd paru
+#makepkg -si PKGBUILD &>/dev/null
+#printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m\n"
+#cd ../st
+#make install &>/dev/null
+#printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m\n"
+#cd ../dwm
+#make install &>/dev/null
+#printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m\n"
+#cd ../dmenu
+#make install &>/dev/null
+#cd
+#rm -rf st dmenu dwm paru
 
 rm /instalador
 
