@@ -14,33 +14,38 @@ export LANG=es_ES.UTF-8
 umount -a &>/dev/null
 pacman -Syy >/dev/null
 
-printf "\033[31mADVERTENCIA:\033[m Para instalar el sistema operativo correctamente es necesario tener conexión a internet."
+printf "\033[31mADVERTENCIA:\033[m Para instalar el sistema operativo correctamente es necesario tener conexión a internet.\n"
 
 [ -z "$arranque" ] && echo "Partición EFI no especificado" && exit
 [ -z "$sistema" ] && echo "Partición Linux no especificada" && exit
 
-printf "\033[35m### INICIANDO INSTALACIÓN ###\033[m"
+printf "\033[35m### INICIANDO INSTALACIÓN ###\033[m\n"
 
-printf "\033[34m>>> CREANDO SISTEMA DE ARCHIVOS\033[m"
+printf "\033[34m>>> CREANDO SISTEMA DE ARCHIVOS\033[m [1/9]\n"
 mkfs.fat -F 32 "/dev/$arranque" >/dev/null
 mkfs.btrfs -f "/dev/$sistema" >/dev/null
 
-printf "\033[34m>>> MONTANDO PARTICIÓN\033[m"
+printf "\033[34m>>> MONTANDO PARTICIÓN\033[m [2/9]\n"
 mount "/dev/$sistema" /mnt >/dev/null
 
-printf "\033[34m>>> INSTALANDO ÚTILES BASE\033[m"
-pacstrap -K /mnt base base-devel &>/dev/null
-printf "\033[34m>>> INSTALANDO KERNEL LINUX\033[m"
-pacstrap -K /mnt linux linux-firmware &>/dev/null
-printf "\033[34m>>> INSTALANDO SERVICIOS DE RED\033[m"
-pacstrap -K /mnt dhcpcd networkmanager wpa_supplicant &>/dev/null
-printf "\033[34m>>> INSTALANDO HERRAMIENTAS ESENCIALES\033[m"
-pacstrap -K /mnt sudo git curl neovim &>/dev/null
-printf "\033[34m>>> INSTALANDO SISTEMAS DE ARCHIVOS\033[m"
-pacstrap -K /mnt btrfs-progs dosfstools ntfs-3g os-prober &>/dev/null
+printf "\033[34m>>> INSTALANDO ÚTILES BASE\033[m [3/9]\n"
+pacstrap -K /mnt base base-devel
+#&>/dev/null
+printf "\033[34m>>> INSTALANDO KERNEL LINUX\033[m [4/9]\n"
+pacstrap -K /mnt linux linux-firmware
+#&>/dev/null
+printf "\033[34m>>> INSTALANDO SERVICIOS DE RED\033[m [5/9]\n"
+pacstrap -K /mnt dhcpcd networkmanager wpa_supplicant
+#&>/dev/null
+printf "\033[34m>>> INSTALANDO HERRAMIENTAS ESENCIALES\033[m [6/9]\n"
+pacstrap -K /mnt sudo git curl neovim
+#&>/dev/null
+printf "\033[34m>>> INSTALANDO SISTEMAS DE ARCHIVOS\033[m [7/9]\n"
+pacstrap -K /mnt btrfs-progs dosfstools ntfs-3g os-prober
+#&>/dev/null
 
-#printf "\033[34m>>> GENERANDO TABLA DEL SISTEMA DE ARCHIVO\033[m"
-#genfstab -U /mnt >> /mnt/etc/fstab
+printf "\033[34m>>> GENERANDO TABLA DEL SISTEMA DE ARCHIVO\033[m [8/9]\n"
+genfstab -U /mnt >> /mnt/etc/fstab
 
 #cp ./extra/base /mnt/instalador
 #arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"
