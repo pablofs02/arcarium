@@ -3,8 +3,10 @@
 #loadkeys es
 timedatectl set-ntp true
 
-ping -c 1 google.com &>/dev/null && dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit
+ping -c 1 google.com || (dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit)
 # iwctl station wlan0 get-networks
+
+pacman -Sy --needed --noconfirm dialog
 
 discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}')
 disco=$(dialog --no-cancel --menu "Escoja el disco donde se instalara arcarium:)" 0 0 0 $discos --output-fd 1)
