@@ -8,7 +8,7 @@ printf "\033[34m>>> MONTANDO SISTEMA DE ARRANQUE\033[m\n"
 mkdir -p /mnt/boot/efi
 mount "/dev/$arranque" /boot/efi
 
-printf "\033[34m>>> CONFIGURACIÓN BASE\033[m\n" # cambiar a más específicos
+printf "\033[34m>>> CONFIGURACIÓN BASE\033[m\n"
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=es_ES.UTF-8" > /etc/locale.conf
@@ -39,7 +39,7 @@ systemctl enable dhcpcd.service &>/dev/null
 systemctl enable NetworkManager.service &>/dev/null
 
 printf "\033[34m>>> INSTALANDO GESTOR DE ARRANQUE\033[m\n"
-pacman -S --noconfirm grub efibootmgr linux-headers
+pacman -S --noconfirm linux-headers
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m\n"
