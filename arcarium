@@ -30,7 +30,7 @@ dialog --colors --infobox "\Z4Montando partición" 10 60
 mount "/dev/$sistema" /mnt
 
 dialog --colors --infobox "\Z4Iniciando instalanción de paquetes esenciales." 10 60
-curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/pacman.conf > pacman.conf
+curl -s https://raw.githubusercontent.com/pablofs02/arcarium/Principal/pacman.conf > pacman.conf
 pacstrap -K -C pacman.conf /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g os-prober grub efibootmgr dialog 2>/dev/null >/dev/null &
 descarga=$!
 
@@ -46,11 +46,11 @@ while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
 done
 
 dialog --colors --infobox "\Z4Montando tabla del sistema de archivos" 10 60
+curl -s https://raw.githubusercontent.com/pablofs02/arcarium/Principal/basis > /mnt/instalador
+chmod +x /mnt/instalador
+mv pacman.conf /mnt
 genfstab -U /mnt >> /mnt/etc/fstab
 
 dialog --colors --msgbox "\Z4Instalanción de esenciales finalizado." 10 60
 
-curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/basis > /mnt/instalador
-chmod +x /mnt/instalador
-mv pacman.conf /mnt
 arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"
