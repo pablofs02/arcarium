@@ -2,7 +2,7 @@
 
 #loadkeys es
 timedatectl set-ntp true
-umount -a 2>/dev/null >/dev/null
+umount /mnt 2>/dev/null >/dev/null
 
 ping -c 1 google.com || (dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit)
 # iwctl station wlan0 get-networks
@@ -38,10 +38,11 @@ mount "/dev/$sistema" /mnt
 
 dialog --colors --infobox "\Z4Iniciando instalanción de paquetes esenciales." 10 60
 curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/pacman.conf > pacman.conf
-pacstrap -K -C pacman.conf /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g os-prober >/dev/null 2>/dev/null &
+pacstrap -K /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g os-prober &
 descarga=$!
 while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
 	dialog --colors --infobox "\Z4Esperando a que se terminen de instalar los paquetes esenciales." 10 60
+	sleep 1
 done
 
 dialog --colors --infobox "\Z4Montando tabla del sistema de archivos" 10 60
