@@ -49,6 +49,5 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 dialog --colors --msgbox "\Z4Instalanción de esenciales finalizado." 10 60
 
-#cp ./basis /mnt/instalador
-#curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/arcarium
+curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/basis > /mnt/instalador
 #arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"
