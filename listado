@@ -1,0 +1,6 @@
+#!/bin/sh
+dialog --checklist "Escoge las opciones que desees:" 0 0 0 \
+	Bluetooth "(Seleccion uwu)" o \
+	Nvidia "(Selec ewe)" o \
+	a "(Otro uwu lunera)" on \
+	2>variable && cat variable

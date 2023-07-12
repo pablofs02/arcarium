@@ -1,9 +1,5 @@
 #!/bin/sh
 
-. config
-
-echo "$bluetooth"
-
 arranque="$1"
 usuario="$2"
 dispositivo="$3"
@@ -23,11 +19,22 @@ echo "$dispositivo" > /etc/hostname
 echo "127.0.0.1    localhost
 ::1          localhost
 127.0.1.1    $dispositivo.localdomain    localhost" >> /etc/hosts
-useradd -mG wheel,storage,power,audio,video "$2"
-printf "\033[33mIntroduzca la contraseña para el administrador\033[m\n"
-passwd
-printf "\033[33mIntroduzca la contraseña para $usuario\033[m\n"
-passwd "$usuario"
+useradd -mG wheel,storage,power,audio,video "$usuario"
+while [ -z "$csa1" ] || [ "$csa1" != "$csa2" ]; do
+	csa1=$(dialog --insecure --passwordbox "Introduzca la contraseña para el administrador" 0 0 --output-fd 1)
+	csa2=$(dialog --insecure --passwordbox "Reintroduzca la contraseña para el administrador" 0 0 --output-fd 1)
+	[ -z "$csa1" ] || [ -z "$csa2" ] && dialog --msgbox "No se ha escrito ninguna contraseña o se ha dejado vacía.\n\nEs necesario proporcionar una contraseña por motivos de seguridad." 0 0
+	[ "$csa1" != "$csa2" ] && dialog --msgbox "Las contraseñas no coinciden.\n\nReinténtelo de nuevo." 0 0
+done
+echo -e "$csa1\n$csa1" | passwd
+while [ -z "$csu1" ] || [ "$csu1" != "$csu2" ]; do
+	csu1=$(dialog --insecure --passwordbox "Introduzca la contraseña para $usuario" 0 0 --output-fd 1)
+	csu2=$(dialog --insecure --passwordbox "Reintroduzca la contraseña para $usuario" 0 0 --output-fd 1)
+	[ -z "$csu1" ] || [ -z "$csu2" ] && dialog --msgbox "No se ha escrito ninguna contraseña o se ha dejado vacía.\n\nEs necesario proporcionar una contraseña por motivos de seguridad." 0 0
+	[ "$csu1" != "$csu2" ] && dialog --msgbox "Las contraseñas no coinciden.\n\nReinténtelo de nuevo." 0 0
+done
+echo -e "$csu1\n$csu1" | passwd "$usuario"
+
 systemctl enable dhcpcd.service &>/dev/null
 systemctl enable NetworkManager.service &>/dev/null
 

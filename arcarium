@@ -1,45 +1,51 @@
 #!/bin/sh
 
-sistema="$1"
-arranque="$2"
-usuario="$3"
-nombre="$4"
-
 #loadkeys es
-#lsblk
-#cfdisk /dev/DISCO
-
 timedatectl set-ntp true
-export LANG=es_ES.UTF-8
 
-ping -c 1 google.com &>/dev/null &&
-printf "\033[31mADVERTENCIA:\033[m Para instalar el sistema operativo correctamente es necesario tener conexión a internet.\n"
+ping -c 1 google.com &>/dev/null && dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit
+# iwctl station wlan0 get-networks
 
-[ -z "$arranque" ] && printf "\033[31mPartición EFI no especificado\033[m" && exit
-[ -z "$sistema" ] && printf "\033[31mPartición Linux no especificada\033[m" && exit
+discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}')
+disco=$(dialog --no-cancel --menu "Escoja el disco donde se instalara arcarium:)" 0 0 0 $discos --output-fd 1)
+cfdisk "/dev/$disco"
 
-printf "\033[35m### INICIANDO INSTALACIÓN ###\033[m\n"
+discos=$(lsblk -l | grep "part" | awk '{print $1" "$4}')
+while [ -z "$arranque" ] || [ -z "$sistema" ] || [ "$arranque" = "$sistema" ]; do
+	arranque=$(dialog --no-cancel --menu "Escoja una partición para almacenar el sistema de arranque:\n\n(Esta partición suele pesar entre 128MB y 512MB)" 0 0 0 $discos --output-fd 1)
+	sistema=$(dialog --no-cancel --menu "Escoja una partición para almacenar el sistema operativo:\n\n(Esta partición almacenará todos los archivos y programas)" 0 0 0 $discos --output-fd 1)
+	[ -z "$arranque" ] && dialog --msgbox "No se ha seleccionado ninguna partición para el sistema de arranque.\n\nEs necesario una partición de arranque para poder iniciar el sistema operativo." 0 0
+	[ -z "$sistema" ] && dialog --msgbox "No se ha seleccionado ninguna partición para el sistema operativo.\n\nEs necesario una partición para el sistema operativo por obvias razones." 0 0
+	[ -n "$arranque" ] && [ -n "$sistema" ] && [ "$arranque" = "$sistema" ] &&
+		dialog --msgbox "Las particiones para el sistema de arranque y para el sistema operativo no pueden ser la misma.\n\nEn caso de solo haber una partición, cierre el programa con Control + C, cree las particiones con 'cfdisk /dev/{disco a partir}' y vuelva a ejecutar este programa." 0 0
+done
 
-printf "\033[34m>>> CREANDO SISTEMA DE ARCHIVOS\033[m [1/9]\n"
+controlador=$(dialog --colors --menu "Escoja su targeta gráfica:" 0 0 0 \
+	1 "Nvidia" \
+	2 "Intel" \
+	3 "AMD" \
+	--output-fd 1)
+
+dialog --colors --infobox "\Z4Creando sistema de archivos" 10 60
 mkfs.fat -F 32 "/dev/$arranque" >/dev/null
 mkfs.btrfs -f "/dev/$sistema" >/dev/null
 
-printf "\033[34m>>> MONTANDO PARTICIÓN\033[m [2/9]\n"
+dialog --colors --infobox "\Z4Montando partición" 10 60
 mount "/dev/$sistema" /mnt >/dev/null
 
-printf "\033[34m>>> INSTALANDO ÚTILES BASE\033[m [3/9]\n"
-pacstrap -K /mnt base base-devel
-printf "\033[34m>>> INSTALANDO KERNEL LINUX\033[m [4/9]\n"
-pacstrap -K /mnt linux linux-firmware
-printf "\033[34m>>> INSTALANDO SERVICIOS DE RED\033[m [5/9]\n"
-pacstrap -K /mnt dhcpcd networkmanager wpa_supplicant
-printf "\033[34m>>> INSTALANDO HERRAMIENTAS ESENCIALES\033[m [6/9]\n"
-pacstrap -K /mnt sudo git curl neovim
-printf "\033[34m>>> INSTALANDO SISTEMAS DE ARCHIVOS\033[m [7/9]\n"
-pacstrap -K /mnt btrfs-progs dosfstools ntfs-3g os-prober
+pacstrap -K -C pacman.conf /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g os-prober &>/dev/null
+descarga=$!
 
-printf "\033[34m>>> GENERANDO TABLA DEL SISTEMA DE ARCHIVO\033[m [8/9]\n"
+while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
+	dialog --colors --infobox "\Z4Esperando a que se terminen de instalar los paquetes esenciales." 10 60
+done
+
+dialog --colors --infobox "\Z4Montando tabla del sistema de archivos" 10 60
 genfstab -U /mnt >> /mnt/etc/fstab
 
-cp ./basis /mnt/instalador
-arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"
+clear
+echo Terminado
+
+#cp ./basis /mnt/instalador
+#curl https://raw.githubusercontent.com/pablofs02/arcarium/Principal/arcarium
+#arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"

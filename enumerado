@@ -1,0 +1,10 @@
+#!/bin/sh
+
+lsblk -l | grep "part" | awk '{print $1}' > discos
+discos=$(nl -s' ' -w1 discos)
+
+dialog --menu "Escoja su partición de arranque:" 0 0 0 $discos \
+	2>arranque
+
+dialog --menu "Escoja su partición de archivos:" 0 0 0 $discos \
+	2>archivos
