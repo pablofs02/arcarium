@@ -2,6 +2,7 @@
 
 #loadkeys es
 timedatectl set-ntp true
+umount -a 2>/dev/null >/dev/null
 
 ping -c 1 google.com || (dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit)
 # iwctl station wlan0 get-networks
@@ -28,16 +29,16 @@ controlador=$(dialog --colors --menu "Escoja su targeta gráfica:" 0 0 0 \
 	3 "AMD" \
 	--output-fd 1)
 
-dialog --colors --infobox "\Z4Creando sistema de archivos" 10 60
-mkfs.fat -F 32 "/dev/$arranque" >/dev/null
-mkfs.btrfs -f "/dev/$sistema" >/dev/null
+#dialog --colors --infobox "\Z4Creando sistema de archivos" 10 60
+mkfs.fat -F 32 "/dev/$arranque"
+mkfs.btrfs -f "/dev/$sistema"
 
-dialog --colors --infobox "\Z4Montando partición" 10 60
-mount "/dev/$sistema" /mnt >/dev/null
+#dialog --colors --infobox "\Z4Montando partición" 10 60
+mount "/dev/$sistema" /mnt
 
-dialog --colors --infobox "\Z4Iniciando instalanción de paquetes esenciales." 10 60
-curl https://raw.githubusercontent.com/pablofs02/arcarium/Principal/pacman.conf > pacman.conf
-pacstrap -K -C pacman.conf /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g os-prober &>/dev/null
+#dialog --colors --infobox "\Z4Iniciando instalanción de paquetes esenciales." 10 60
+curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/pacman.conf > pacman.conf
+pacstrap -K -C pacman.conf /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g os-prober
 descarga=$!
 
 while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
@@ -50,5 +51,5 @@ genfstab -U /mnt >> /mnt/etc/fstab
 dialog --colors --msgbox "\Z4Instalanción de esenciales finalizado." 10 60
 
 #cp ./basis /mnt/instalador
-#curl https://raw.githubusercontent.com/pablofs02/arcarium/Principal/arcarium
+#curl -q https://raw.githubusercontent.com/pablofs02/arcarium/Principal/arcarium
 #arch-chroot /mnt /instalador "$arranque" "$usuario" "$nombre"
