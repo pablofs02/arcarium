@@ -3,12 +3,19 @@
 arranque="$1"
 usuario="$2"
 dispositivo="$3"
+csa="$4"
+csu="$5"
+controlador="$6"
 
-printf "\033[34m>>> MONTANDO SISTEMA DE ARRANQUE\033[m\n"
-mkdir -p /mnt/boot/efi
+dialog --colors --infobox "\Z4Montando sistema de arranque." 10 60
+mkdir -p /boot/efi
 mount "/dev/$arranque" /boot/efi
 
-printf "\033[34m>>> CONFIGURACIÓN BASE\033[m\n"
+dialog --colors --infobox "\Z4Instalando gestor de arranque." 10 60
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB >/dev/null
+grub-mkconfig -o /boot/grub/grub.cfg >/dev/null
+
+dialog --colors --infobox "\Z4Configuración base." 10 60
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=es_ES.UTF-8" > /etc/locale.conf
@@ -19,100 +26,62 @@ echo "$dispositivo" > /etc/hostname
 echo "127.0.0.1    localhost
 ::1          localhost
 127.0.1.1    $dispositivo.localdomain    localhost" >> /etc/hosts
+
 useradd -mG wheel,storage,power,audio,video "$usuario"
-while [ -z "$csa1" ] || [ "$csa1" != "$csa2" ]; do
-	csa1=$(dialog --insecure --passwordbox "Introduzca la contraseña para el administrador" 0 0 --output-fd 1)
-	csa2=$(dialog --insecure --passwordbox "Reintroduzca la contraseña para el administrador" 0 0 --output-fd 1)
-	[ -z "$csa1" ] || [ -z "$csa2" ] && dialog --msgbox "No se ha escrito ninguna contraseña o se ha dejado vacía.\n\nEs necesario proporcionar una contraseña por motivos de seguridad." 0 0
-	[ "$csa1" != "$csa2" ] && dialog --msgbox "Las contraseñas no coinciden.\n\nReinténtelo de nuevo." 0 0
-done
-echo -e "$csa1\n$csa1" | passwd
-while [ -z "$csu1" ] || [ "$csu1" != "$csu2" ]; do
-	csu1=$(dialog --insecure --passwordbox "Introduzca la contraseña para $usuario" 0 0 --output-fd 1)
-	csu2=$(dialog --insecure --passwordbox "Reintroduzca la contraseña para $usuario" 0 0 --output-fd 1)
-	[ -z "$csu1" ] || [ -z "$csu2" ] && dialog --msgbox "No se ha escrito ninguna contraseña o se ha dejado vacía.\n\nEs necesario proporcionar una contraseña por motivos de seguridad." 0 0
-	[ "$csu1" != "$csu2" ] && dialog --msgbox "Las contraseñas no coinciden.\n\nReinténtelo de nuevo." 0 0
-done
-echo -e "$csu1\n$csu1" | passwd "$usuario"
+echo -e "$csa\n$csa" | passwd
+echo -e "$csu\n$csu" | passwd "$usuario"
 
-systemctl enable dhcpcd.service &>/dev/null
-systemctl enable NetworkManager.service &>/dev/null
+systemctl enable dhcpcd.service >/dev/null
+systemctl enable NetworkManager.service >/dev/null
 
-printf "\033[34m>>> INSTALANDO GESTOR DE ARRANQUE\033[m\n"
-pacman -S --noconfirm linux-headers
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-grub-mkconfig -o /boot/grub/grub.cfg
 printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m\n"
-pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime
-printf "\033[34m>>> INSTALANDO SERVIDOR GRÁFICO\033[m\n"
-pacman -S --noconfirm xorg xorg-xinit picom lxappearance xdg-user-dirs
+[ "$controlador" = "1" ] && pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null &
+descarga=$!
 
 printf "\033[34m>>> CONFIGURANDO SONIDO\033[m\n"
-pacman -S --noconfirm pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
-#systemctl --user enable pipewire.socket &>/dev/null
-#systemctl --user enable pipewire-pulse.socket &>/dev/null
-#systemctl --user enable wireplumber.service &>/dev/null
+systemctl --user enable pipewire.socket >/dev/null
+systemctl --user enable pipewire-pulse.socket >/dev/null
+systemctl --user enable wireplumber.service >/dev/null
 
-printf "\033[34m>>> INSTALANDO FIREFOX\033[m\n"
-pacman -S --noconfirm firefox-i18n-es-es
-printf "\033[34m>>> INSTALANDO SHELL\033[m\n"
-pacman -S --noconfirm zsh zsh-syntax-highlighting dash
-printf "\033[34m>>> INSTALANDO PROGRAMAS DEL SISTEMA\033[m\n"
-pacman -S --noconfirm alsa-utils brightnessctl clipmenu dunst
-printf "\033[34m>>> INSTALANDO PROGRAMAS MULTIMEDIA\033[m\n"
-pacman -S --noconfirm fzf exa scrot socat sxhkd sxiv tree mpv xclip xwallpaper
-printf "\033[34m>>> INSTALANDO PDFS\033[m\n"
-pacman -S --noconfirm zathura zathura-pdf-mupdf jq
-printf "\033[34m>>> INSTALANDO COMPRESORES\033[m\n"
-pacman -S --noconfirm vorbis-tools unrar unzip zip tar
-
-printf "\033[34m>>> INSTALANDO ?????\033[m\n"
-pacman -S --noconfirm gparted htop inetutils net-tools newsboat perl-image-exiftool openssh
 printf "\033[34m>>> CONFIGURANDO SHELL\033[m\n"
 ln -sf /bin/dash /bin/sh
 chsh -s /usr/bin/zsh >/dev/null
 printf "\033[33mIntroduzca de nuevo la contraseña de $usuario\033[m\n"
 su "$usuario" -c "chsh -s /usr/bin/zsh"
 
-printf "\033[34m>>> INSTALANDO FUENTES\033[m\n"
-pacman -S --noconfirm noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
 printf "\033[34m>>> INSTALANDO RUST\033[m\n"
-pacman -S --noconfirm rustup
-rustup default stable
+rustup default stable >/dev/null
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
 #printf "\033[34m>>> INSTALANDO PAMPLINAS\033[m"
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
-#printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m\n"
-#git clone https://aur.archlinux.org/paru.git &>/dev/null
-#git clone https://github.com/pablofs02/st &>/dev/null
-#git clone https://github.com/pablofs02/dwm &>/dev/null
-#git clone https://github.com/pablofs02/dmenu &>/dev/null
-#printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m\n"
-#cd paru
-#makepkg -si PKGBUILD &>/dev/null
-#printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m\n"
-#cd ../st
-#make install &>/dev/null
-#printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m\n"
-#cd ../dwm
-#make install &>/dev/null
-#printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m\n"
-#cd ../dmenu
-#make install &>/dev/null
-#cd
-#rm -rf st dmenu dwm paru
+printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m\n"
+git clone https://aur.archlinux.org/paru.git >/dev/null
+git clone https://github.com/pablofs02/st >/dev/null
+git clone https://github.com/pablofs02/dwm >/dev/null
+git clone https://github.com/pablofs02/dmenu >/dev/null
+printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m\n"
+cd paru
+makepkg -si PKGBUILD >/dev/null
+printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m\n"
+cd ../st
+make install >/dev/null
+printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m\n"
+cd ../dwm
+make install >/dev/null
+printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m\n"
+cd ../dmenu
+make install >/dev/null
+cd /
+rm -rf st dmenu dwm paru
 
 rm /instalador
 
-printf "\033[35m### INSTALACIÓN FINALIZADA ###\033[m\n"
-printf "> arch-chroot /mnt
-> EDITOR=nvim visudo   (permitir el comando sudo)
-> exit
-> umount /mnt
-> reboot
-\033[31mLo más probable es que haga otro script para configurar estos archivos sensibles\033[m\n"
+while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
+	dialog --colors --infobox "\Z4Esperando a que se terminen de descargar el controlador." 10 60
+	sleep 2
+done
