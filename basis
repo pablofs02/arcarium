@@ -34,15 +34,15 @@ echo -e "$csu\n$csu" | passwd "$usuario"
 systemctl enable dhcpcd.service >/dev/null
 systemctl enable NetworkManager.service >/dev/null
 
-[ "$controlador" = "1" ] && pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null &
+[ "$controlador" = "1" ] && pacman -S --noconfirm nvidia-open nvidia-utils nvidia-settings nvidia-prime >/dev/null &
 [ "$controlador" = "2" ] && pacman -S --noconfirm xf86-video-intel mesa >/dev/null &
 [ "$controlador" = "3" ] && pacman -S --noconfirm xf86-video-amdgpu mesa >/dev/null &
 descarga=$!
 
 dialog --colors --infobox "\Z4Configurando sonido." 10 60
-su "$usuario" -c "systemctl --user enable pipewire.socket" >/dev/null
-su "$usuario" -c "systemctl --user enable pipewire-pulse.socket" >/dev/null
-su "$usuario" -c "systemctl --user enable pipewire-pulse.socket" >/dev/null
+su "$usuario" -c "systemctl --user enable pipewire.socket >/dev/null"
+su "$usuario" -c "systemctl --user enable pipewire-pulse.socket >/dev/null"
+su "$usuario" -c "systemctl --user enable wireplumber.service >/dev/null"
 
 dialog --colors --infobox "\Z4Configurando shell." 10 60
 ln -sf /bin/dash /bin/sh
@@ -52,7 +52,7 @@ echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh"
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
 dialog --colors --infobox "\Z4Instalando rust." 10 60
-rustup default stable >/dev/null
+su "$usuario" -c "rustup default stable >/dev/null"
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
 #printf "\033[34m>>> INSTALANDO PAMPLINAS\033[m"
@@ -73,8 +73,10 @@ cd ../dwm
 make install >/dev/null
 cd ../dmenu
 make install >/dev/null
+cd ../sent
+make install >/dev/null
 cd ..
-rm -rf st dmenu dwm paru
+rm -rf st dmenu dwm sent paru
 
 rm /instalador
 
