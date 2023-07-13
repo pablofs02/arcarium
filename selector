@@ -1,6 +1,0 @@
-#!/bin/sh
-dialog --colors --menu "Escoja su targeta gráfica:" 0 0 0 \
-	1 "Nvidia" \
-	2 "Intel" \
-	3 "AMD" \
-	2>variable && cat variable

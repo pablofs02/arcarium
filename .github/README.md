@@ -1,8 +1,6 @@
-- Tipos por defecto
+## # Pasos a seguir
+Si no tienes conexión cableada:
 > iwctl --passphrase [contraseña] station wlan0 connect [wifi]
-> pacman -Sy git
-> git clone https://github.com/pablofs02/arcarium
-> cd arcarium
-> cfdisk /dev/xxx
-> lsblk -f
-> ./arcarium "sa_sistema" "sa_arranque" "nombre_usuario" "nombre_sistema"
+> curl https://raw.githubusercontent.com/pablofs02/arcarium/Principal/arcarium
+> chmod +x arcarium
+> ./arcarium

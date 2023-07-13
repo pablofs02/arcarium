@@ -34,24 +34,24 @@ echo -e "$csu\n$csu" | passwd "$usuario"
 systemctl enable dhcpcd.service >/dev/null
 systemctl enable NetworkManager.service >/dev/null
 
-printf "\033[34m>>> INSTALANDO CONTROLADORES\033[m\n"
 [ "$controlador" = "1" ] && pacman -S --noconfirm nvidia nvidia-utils nvidia-settings nvidia-prime >/dev/null &
+[ "$controlador" = "2" ] && pacman -S --noconfirm xf86-video-intel mesa >/dev/null &
+[ "$controlador" = "3" ] && pacman -S --noconfirm xf86-video-amdgpu mesa >/dev/null &
 descarga=$!
 
-printf "\033[34m>>> CONFIGURANDO SONIDO\033[m\n"
-systemctl --user enable pipewire.socket >/dev/null
-systemctl --user enable pipewire-pulse.socket >/dev/null
-systemctl --user enable wireplumber.service >/dev/null
+dialog --colors --infobox "\Z4Configurando sonido." 10 60
+su "$usuario" -c "systemctl --user enable pipewire.socket" >/dev/null
+su "$usuario" -c "systemctl --user enable pipewire-pulse.socket" >/dev/null
+su "$usuario" -c "systemctl --user enable pipewire-pulse.socket" >/dev/null
 
-printf "\033[34m>>> CONFIGURANDO SHELL\033[m\n"
+dialog --colors --infobox "\Z4Configurando shell." 10 60
 ln -sf /bin/dash /bin/sh
 chsh -s /usr/bin/zsh >/dev/null
-printf "\033[33mIntroduzca de nuevo la contraseña de $usuario\033[m\n"
-su "$usuario" -c "chsh -s /usr/bin/zsh"
+echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh"
 
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
-printf "\033[34m>>> INSTALANDO RUST\033[m\n"
+dialog --colors --infobox "\Z4Instalando rust." 10 60
 rustup default stable >/dev/null
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
@@ -59,24 +59,21 @@ rustup default stable >/dev/null
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
-printf "\033[34m>>> BAJANDO REPOSITORIOS PROPIOS\033[m\n"
-git clone https://aur.archlinux.org/paru.git >/dev/null
-git clone https://github.com/pablofs02/st >/dev/null
-git clone https://github.com/pablofs02/dwm >/dev/null
-git clone https://github.com/pablofs02/dmenu >/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE PAQUETES AUR (paru)\033[m\n"
+dialog --colors --infobox "\Z4Bajando repositorios propios." 10 60
+git clone https://aur.archlinux.org/paru.git &>/dev/null
+git clone https://github.com/pablofs02/st &>/dev/null
+git clone https://github.com/pablofs02/dwm &>/dev/null
+git clone https://github.com/pablofs02/dmenu &>/dev/null
+git clone https://github.com/pablofs02/sent &>/dev/null
 cd paru
-makepkg -si PKGBUILD >/dev/null
-printf "\033[34m>>> INSTALANDO TERMINAL (st)\033[m\n"
+su "$usuario" -c makepkg >/dev/null
 cd ../st
 make install >/dev/null
-printf "\033[34m>>> INSTALANDO GESTOR DE VENTANAS (dwm)\033[m\n"
 cd ../dwm
 make install >/dev/null
-printf "\033[34m>>> INSTALANDO MENÚ (dmenu)\033[m\n"
 cd ../dmenu
 make install >/dev/null
-cd /
+cd ..
 rm -rf st dmenu dwm paru
 
 rm /instalador
