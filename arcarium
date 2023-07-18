@@ -1,12 +1,14 @@
 #!/bin/sh
 
-#loadkeys es
+# loadkeys es
 timedatectl set-ntp true
 umount /mnt 2>/dev/null
 pacman -Sy --needed --noconfirm dialog
 
-ping -c 1 google.com || (dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit)
 # iwctl station wlan0 get-networks
+ping -c 1 google.com || iwctl --passphrase "$1" station wlan0 connect "$2"
+
+dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit)
 
 discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}')
 disco=$(dialog --no-cancel --menu "Escoja el disco donde se instalará arcarium:" 0 0 0 $discos --output-fd 1)
@@ -31,7 +33,21 @@ dialog --colors --infobox "\Z4Montando partición" 10 60
 mount "/dev/$sistema" /mnt
 
 dialog --colors --infobox "\Z4Iniciando instalanción de paquetes esenciales." 10 60
-pacstrap -K /mnt base base-devel linux linux-firmware dhcpcd networkmanager git neovim btrfs-progs dosfstools ntfs-3g grub efibootmgr dialog fzf exa scrot socat sxhkd sxiv tree mpv xclip xwallpaper zathura zathura-pdf-mupdf jq vorbis-tools unrar unzip zip alsa-utils brightnessctl clipmenu dunst zsh zsh-syntax-highlighting dash firefox-i18n-es-es gparted htop inetutils net-tools newsboat perl-image-exiftool openssh noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation rustup linux-headers xorg xorg-xinit picom lxappearance xdg-user-dirs pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber libnotify 2>/dev/null >/dev/null &
+pacstrap -K /mnt base base-devel linux linux-firmware \
+	dhcpcd networkmanager git neovim \
+	dosfstools ntfs-3g \
+	grub efibootmgr dialog \
+	fzf exa scrot socat sxhkd sxiv tree \
+	mpv xclip xwallpaper zathura zathura-pdf-mupdf \
+	jq vorbis-tools unrar unzip zip \
+	alsa-utils brightnessctl clipmenu dunst \
+	zsh zsh-syntax-highlighting dash \
+	firefox-i18n-es-es gparted htop inetutils net-tools \
+	newsboat perl-image-exiftool openssh \
+	noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation gnu-free-fonts \
+	rustup linux-headers xorg xorg-xinit picom lxappearance xdg-user-dirs \
+	pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber \
+	libnotify 2>/dev/null >/dev/null &
 descarga=$!
 
 controlador=$(dialog --colors --no-cancel --menu "Escoja su targeta gráfica:" 0 0 0 \

@@ -80,7 +80,7 @@ rm -rf st dmenu dwm sent paru
 
 rm /instalador
 
+dialog --colors --infobox "\Z4Esperando a que se terminen de descargar el controlador." 10 60
 while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
-	dialog --colors --infobox "\Z4Esperando a que se terminen de descargar el controlador." 10 60
-	sleep 2
+	sleep 1
 done
