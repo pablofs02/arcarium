@@ -7,15 +7,15 @@ csa="$4"
 csu="$5"
 controlador="$6"
 
-whiptail --infobox "Montando sistema de arranque." 10 60
+dialog --colors --infobox "\Z4Montando sistema de arranque." 10 60
 mkdir -p /boot/efi
 mount "/dev/$arranque" /boot/efi
 
-whiptail --infobox "Instalando gestor de arranque." 10 60
+dialog --colors --infobox "\Z4Instalando gestor de arranque." 10 60
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB >/dev/null
 grub-mkconfig -o /boot/grub/grub.cfg >/dev/null
 
-whiptail --infobox "Configuración base." 10 60
+dialog --colors --infobox "\Z4Configuración base." 10 60
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=es_ES.UTF-8" > /etc/locale.conf
@@ -39,19 +39,19 @@ systemctl enable NetworkManager.service >/dev/null
 [ "$controlador" = "3" ] && pacman -S --noconfirm xf86-video-amdgpu mesa >/dev/null &
 descarga=$!
 
-whiptail --infobox "Configurando sonido." 10 60
+dialog --colors --infobox "\Z4Configurando sonido." 10 60
 su "$usuario" -c "systemctl --user enable pipewire.socket >/dev/null"
 su "$usuario" -c "systemctl --user enable pipewire-pulse.socket >/dev/null"
 su "$usuario" -c "systemctl --user enable wireplumber.service >/dev/null"
 
-whiptail --infobox "Configurando shell." 10 60
+dialog --colors --infobox "\Z4Configurando shell." 10 60
 ln -sf /bin/dash /bin/sh
 chsh -s /usr/bin/zsh >/dev/null
 echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh"
 
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
-whiptail --infobox "Instalando rust." 10 60
+dialog --colors --infobox "\Z4Instalando rust." 10 60
 su "$usuario" -c "rustup default stable >/dev/null"
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
@@ -59,7 +59,7 @@ su "$usuario" -c "rustup default stable >/dev/null"
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
-whiptail --infobox "Bajando repositorios propios." 10 60
+dialog --colors --infobox "\Z4Bajando repositorios propios." 10 60
 git clone https://aur.archlinux.org/paru.git &>/dev/null
 git clone https://github.com/pablofs02/st &>/dev/null
 git clone https://github.com/pablofs02/dwm &>/dev/null
@@ -80,9 +80,7 @@ rm -rf st dmenu dwm sent paru
 
 rm /instalador
 
-whiptail --infobox "Esperando a que se terminen de descargar el controlador." 10 60
+dialog --colors --infobox "\Z4Esperando a que se terminen de descargar el controlador." 10 60
 while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
 	sleep 1
 done
-
-whiptail --msgbox "Arcarium instalado.\n\nBienvenido a tu nuevo sistema operativo LIBRE." 10 60
