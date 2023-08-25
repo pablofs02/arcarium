@@ -11,7 +11,7 @@ ping -c 1 google.com || iwctl --passphrase "$1" station wlan0 connect "$2"
 dialog --colors --title "\Z1ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 0 0 && exit)
 
 discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}')
-disco=$(dialog --no-cancel --menu "Escoja el disco donde se instalará arcarium:" 0 0 0 $discos --output-fd 1)
+disco=$(dialog --no-cancel --menu "Escoja el disco donde se instalará arcus:" 0 0 0 $discos --output-fd 1)
 cfdisk "/dev/$disco"
 sleep 0.1
 
@@ -88,7 +88,7 @@ done
 dialog --colors --infobox "\Z4Montando tabla del sistema de archivos" 10 60
 genfstab -U /mnt >> /mnt/etc/fstab
 
-curl -s https://raw.githubusercontent.com/pablofs02/arcarium/Principal/basis > /mnt/instalador
+curl -s https://raw.githubusercontent.com/pablofs02/arcus/Principal/basis > /mnt/instalador
 chmod +x /mnt/instalador
 dialog --colors --msgbox "\Z4Instalanción de esenciales finalizado." 10 60
 

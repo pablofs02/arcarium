@@ -7,8 +7,8 @@ Si no tienes conexión cableada (necesario si no tienes conexión cableada):
 
 `iwctl --passphrase [contraseña] station wlan0 connect [wifi]`
 
-`curl https://raw.githubusercontent.com/pablofs02/arcarium/Principal/arcarium > arcarium`
+`curl https://raw.githubusercontent.com/pablofs02/arcus/Principal/arcus > arcus`
 
-`chmod +x arcarium`
+`chmod +x arcus`
 
-`./arcarium`
+`./arcus`
