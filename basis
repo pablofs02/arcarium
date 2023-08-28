@@ -37,7 +37,6 @@ systemctl enable NetworkManager.service >/dev/null
 [ "$controlador" = "1" ] && pacman -S --noconfirm nvidia-open nvidia-utils nvidia-settings nvidia-prime >/dev/null &
 [ "$controlador" = "2" ] && pacman -S --noconfirm xf86-video-intel mesa >/dev/null &
 [ "$controlador" = "3" ] && pacman -S --noconfirm xf86-video-amdgpu mesa >/dev/null &
-descarga=$!
 
 whiptail --infobox "Configurando sonido." 10 60
 su "$usuario" -c "systemctl --user enable pipewire.socket >/dev/null"
@@ -52,6 +51,7 @@ echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh"
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
 whiptail --infobox "Instalando rust." 10 60
+# -----------------------------------------------no se instaló
 su "$usuario" -c "rustup default stable >/dev/null"
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
@@ -59,6 +59,7 @@ su "$usuario" -c "rustup default stable >/dev/null"
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
+# -----------------------------------------------no se instaló
 whiptail --infobox "Bajando repositorios propios." 10 60
 git clone https://aur.archlinux.org/paru.git &>/dev/null
 git clone https://github.com/pablofs02/st &>/dev/null
@@ -81,8 +82,6 @@ rm -rf st dmenu dwm sent paru
 rm /instalador
 
 whiptail --infobox "Esperando a que se terminen de descargar el controlador." 10 60
-while [ "$(kill -0 "$descarga" 2>/dev/null && echo 1)" = "1" ]; do
-	sleep 1
-done
+wait
 
 whiptail --msgbox "Arcarium instalado.\n\nBienvenido a tu nuevo sistema operativo LIBRE." 10 60

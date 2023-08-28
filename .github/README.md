@@ -1,4 +1,5 @@
 # Quehaceres
+- Copiar config básica de primeras.
 - Cambio de colores.
 - Tamaño de letras.
 
