@@ -1,15 +1,27 @@
-# Quehaceres
-- Copiar config básica de primeras.
-- Cambio de colores.
-- Tamaño de letras.
-
 # Pasos a seguir
-Si no tienes conexión cableada (necesario si no tienes conexión cableada):
+Por defecto está el teclado estadounidense. Cámbialo al español para que sea más fácil meter los comandos.
+
+`loadkeys es`
+
+Si no tiene conexión cableada, conéctese a una red wifi.
 
 `iwctl --passphrase [contraseña] station wlan0 connect [wifi]`
 
+Bájese el archivo de instalación en la máquina local.
+
 `curl https://raw.githubusercontent.com/pablofs02/arcus/Principal/arcus > arcus`
+
+Dele permisos de ejecución.
 
 `chmod +x arcus`
 
+Y ejecute el instalador.
+
 `./arcus`
+
+# Informar del instalador
+Usar un sistema EFI de 128/256/512M y otro con todo el espacio libre disponible.
+
+Use Type y seleccione "EFI System".
+
+Use "Write" y escriba 'yes' y salga con 'Quit'.

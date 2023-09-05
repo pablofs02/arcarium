@@ -1,7 +1,26 @@
 #!/bin/sh
 
 # loadkeys es
-setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32.psfu.gz
+echo "#282828
+#cc241d
+#98971a
+#d79921
+#458588
+#b16286
+#689d6a
+#a89984
+#928374
+#fb4934
+#b8bb26
+#fabd2f
+#83a598
+#d3869b
+#8ec07c
+#ebdbb2
+" > colores
+setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32
+setvtrgb colores
+clear
 timedatectl set-ntp true
 umount /mnt 2>/dev/null
 
@@ -15,7 +34,7 @@ pacman -Sy >/dev/null &
 
 discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}')
 disco=$(whiptail --nocancel --menu "Escoja el disco donde se instalará arcus:" 16 60 0 $discos 3>&1 1>&2 2>&3)
-cfdisk "/dev/$disco"
+cfdisk "/dev/$disco" && sleep 0.1
 
 discos=$(lsblk -l | grep "part" | awk '{print $1" "$4}')
 while [ -z "$arranque" ] || [ -z "$sistema" ] || [ "$arranque" = "$sistema" ]; do
@@ -28,13 +47,14 @@ while [ -z "$arranque" ] || [ -z "$sistema" ] || [ "$arranque" = "$sistema" ]; d
 done
 
 whiptail --infobox "Creando sistema de archivos" 16 60
-mkfs.fat -F 32 "/dev/$arranque" >/dev/null
-mkfs.btrfs -f "/dev/$sistema" >/dev/null
+mkfs.fat -F 32 "/dev/$arranque" & >/dev/null 2>/dev/null
+mkfs.btrfs -f "/dev/$sistema" & >/dev/null 2>/dev/null
 
 whiptail --infobox "Montando partición" 16 60
 mount "/dev/$sistema" /mnt
 
 whiptail --infobox "Iniciando instalanción de paquetes esenciales." 16 60
+wait
 pacstrap -K /mnt base base-devel linux linux-firmware \
 	dhcpcd networkmanager git neovim \
 	dosfstools ntfs-3g \

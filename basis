@@ -12,12 +12,12 @@ mkdir -p /boot/efi
 mount "/dev/$arranque" /boot/efi
 
 whiptail --infobox "Instalando gestor de arranque." 10 60
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB >/dev/null
-grub-mkconfig -o /boot/grub/grub.cfg >/dev/null
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB >/dev/null 2>/dev/null
+grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>/dev/null
 
 whiptail --infobox "Configuración base." 10 60
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
-locale-gen
+locale-gen >/dev/null 2>/dev/null
 echo "LANG=es_ES.UTF-8" > /etc/locale.conf
 echo "KEYMAP=es" >> /etc/vconsole.conf
 ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
@@ -28,57 +28,59 @@ echo "127.0.0.1    localhost
 127.0.1.1    $dispositivo.localdomain    localhost" >> /etc/hosts
 
 useradd -mG wheel,storage,power,audio,video "$usuario"
-echo -e "$csa\n$csa" | passwd
-echo -e "$csu\n$csu" | passwd "$usuario"
+echo -e "$csa\n$csa" | passwd >/dev/null 2>/dev/null
+echo -e "$csu\n$csu" | passwd "$usuario" >/dev/null 2>/dev/null
 
-systemctl enable dhcpcd.service >/dev/null
-systemctl enable NetworkManager.service >/dev/null
+systemctl enable dhcpcd.service >/dev/null 2>/dev/null
+systemctl enable NetworkManager.service >/dev/null 2>/dev/null
 
-[ "$controlador" = "1" ] && pacman -S --noconfirm nvidia-open nvidia-utils nvidia-settings nvidia-prime >/dev/null &
-[ "$controlador" = "2" ] && pacman -S --noconfirm xf86-video-intel mesa >/dev/null &
-[ "$controlador" = "3" ] && pacman -S --noconfirm xf86-video-amdgpu mesa >/dev/null &
+[ "$controlador" = "1" ] && pacman -S --noconfirm nvidia-open nvidia-utils nvidia-settings nvidia-prime >/dev/null 2>/dev/null &
+[ "$controlador" = "2" ] && pacman -S --noconfirm xf86-video-intel mesa >/dev/null 2>/dev/null &
+[ "$controlador" = "3" ] && pacman -S --noconfirm xf86-video-amdgpu mesa >/dev/null 2>/dev/null &
 
 whiptail --infobox "Configurando sonido." 10 60
-su "$usuario" -c "systemctl --user enable pipewire.socket >/dev/null"
-su "$usuario" -c "systemctl --user enable pipewire-pulse.socket >/dev/null"
-su "$usuario" -c "systemctl --user enable wireplumber.service >/dev/null"
+su "$usuario" -c "systemctl --user enable pipewire.socket  >/dev/null 2>/dev/null"
+su "$usuario" -c "systemctl --user enable pipewire-pulse.socket  >/dev/null 2>/dev/null"
+su "$usuario" -c "systemctl --user enable wireplumber.service  >/dev/null 2>/dev/null"
 
 whiptail --infobox "Configurando shell." 10 60
 ln -sf /bin/dash /bin/sh
-chsh -s /usr/bin/zsh >/dev/null
-echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh"
+chsh -s /usr/bin/zsh >/dev/null 2>/dev/null 
+echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh >/dev/null 2>/dev/null"
 
 #Añadir funciones y archivos de configuración
 
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
 whiptail --infobox "Instalando rust." 10 60
-# -----------------------------------------------no se instaló
-su "$usuario" -c "rustup default stable"
+mkdir -p "/home/$usuario/.local/share"
+export RUSTUP_HOME="/home/$usuario/.local/share/rustup"
+export CARGO_HOME="/home/$usuario/.local/share/cargo"
+su "$usuario" -c "rustup default stable >/dev/null 2>/dev/null"
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
 #printf "\033[34m>>> INSTALANDO PAMPLINAS\033[m"
 #pacman -S --noconfirm termdown cmatrix >/dev/null
 # dbus-python para script
 
-# -----------------------------------------------no se instaló
 whiptail --infobox "Bajando repositorios propios." 10 60
-git clone https://aur.archlinux.org/paru.git &>/dev/null
-git clone https://github.com/pablofs02/st &>/dev/null
-git clone https://github.com/pablofs02/dwm &>/dev/null
-git clone https://github.com/pablofs02/dmenu &>/dev/null
-git clone https://github.com/pablofs02/sent &>/dev/null
+git clone https://aur.archlinux.org/paru.git >/dev/null 2>/dev/null
+git clone https://github.com/pablofs02/st >/dev/null 2>/dev/null 
+git clone https://github.com/pablofs02/dwm >/dev/null 2>/dev/null 
+git clone https://github.com/pablofs02/dmenu >/dev/null 2>/dev/null 
+git clone https://github.com/pablofs02/sent >/dev/null 2>/dev/null 
 wait
-(cd paru; su "$usuario" -c makepkg >/dev/null)
-(cd st; make install >/dev/null)
-(cd dwm; make install >/dev/null)
-(cd dmenu; make install >/dev/null)
-(cd sent; make install >/dev/null)
+chown -R "$usuario" paru
+(cd paru; su "$usuario" -c makepkg >/dev/null 2>/dev/null)
+(cd st; make install >/dev/null 2>/dev/null)
+(cd dwm; make install >/dev/null 2>/dev/null)
+(cd dmenu; make install >/dev/null 2>/dev/null)
+(cd sent; make install >/dev/null 2>/dev/null)
 rm -rf st dmenu dwm sent paru
 
 rm /instalador
 
 whiptail --infobox "Esperando a que se terminen de descargar el controlador." 10 60
-(cd /home/$usuario; rm .bash_logout .bash_profile .bashrc .lesshst; rmdir Descargas Documentos Escritorio Imágenes Música Plantillas Público Vídeos)
+(cd "/home/$usuario"; rm .bash_logout .bash_profile .bashrc)
 
 whiptail --msgbox "Arcus instalado.\n\nBienvenido a tu nuevo sistema operativo LIBRE." 10 60
