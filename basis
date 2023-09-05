@@ -48,11 +48,13 @@ ln -sf /bin/dash /bin/sh
 chsh -s /usr/bin/zsh >/dev/null
 echo -e "$csu" | su "$usuario" -c "chsh -s /usr/bin/zsh"
 
+#Añadir funciones y archivos de configuración
+
 #printf "\033[34m>>> INSTALANDO GESTOR DE CLAVES\033[m\n"
 #pacman -S --noconfirm gnome-keyring seahorse
 whiptail --infobox "Instalando rust." 10 60
 # -----------------------------------------------no se instaló
-su "$usuario" -c "rustup default stable >/dev/null"
+su "$usuario" -c "rustup default stable"
 #printf "\033[34m>>> INSTALANDO EDITORES\033[m"
 #pacman -S --noconfirm gimp blender inkscape >/dev/null
 #printf "\033[34m>>> INSTALANDO PAMPLINAS\033[m"
@@ -66,22 +68,17 @@ git clone https://github.com/pablofs02/st &>/dev/null
 git clone https://github.com/pablofs02/dwm &>/dev/null
 git clone https://github.com/pablofs02/dmenu &>/dev/null
 git clone https://github.com/pablofs02/sent &>/dev/null
-cd paru
-su "$usuario" -c makepkg >/dev/null
-cd ../st
-make install >/dev/null
-cd ../dwm
-make install >/dev/null
-cd ../dmenu
-make install >/dev/null
-cd ../sent
-make install >/dev/null
-cd ..
+wait
+(cd paru; su "$usuario" -c makepkg >/dev/null)
+(cd st; make install >/dev/null)
+(cd dwm; make install >/dev/null)
+(cd dmenu; make install >/dev/null)
+(cd sent; make install >/dev/null)
 rm -rf st dmenu dwm sent paru
 
 rm /instalador
 
 whiptail --infobox "Esperando a que se terminen de descargar el controlador." 10 60
-wait
+(cd /home/$usuario; rm .bash_logout .bash_profile .bashrc .lesshst; rmdir Descargas Documentos Escritorio Imágenes Música Plantillas Público Vídeos)
 
-whiptail --msgbox "Arcarium instalado.\n\nBienvenido a tu nuevo sistema operativo LIBRE." 10 60
+whiptail --msgbox "Arcus instalado.\n\nBienvenido a tu nuevo sistema operativo LIBRE." 10 60
