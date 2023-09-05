@@ -22,7 +22,7 @@ setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32
 setvtrgb colores
 clear
 timedatectl set-ntp true
-umount /mnt 2>/dev/null
+umount /mnt >/dev/null 2>/dev/null
 
 #ping -c 1 google.com || (iwctl station wlan0 get-networks &&
 	#read -p "Red: " red
@@ -47,14 +47,15 @@ while [ -z "$arranque" ] || [ -z "$sistema" ] || [ "$arranque" = "$sistema" ]; d
 done
 
 whiptail --infobox "Creando sistema de archivos" 16 60
-mkfs.fat -F 32 "/dev/$arranque" & >/dev/null 2>/dev/null
-mkfs.btrfs -f "/dev/$sistema" & >/dev/null 2>/dev/null
+mkfs.fat -F 32 "/dev/$arranque" >/dev/null 2>/dev/null &
+mkfs.btrfs -f "/dev/$sistema" >/dev/null 2>/dev/null &
+
+wait
 
 whiptail --infobox "Montando partición" 16 60
 mount "/dev/$sistema" /mnt
 
 whiptail --infobox "Iniciando instalanción de paquetes esenciales." 16 60
-wait
 pacstrap -K /mnt base base-devel linux linux-firmware \
 	dhcpcd networkmanager git neovim \
 	dosfstools ntfs-3g \
