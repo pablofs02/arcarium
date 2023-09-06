@@ -18,8 +18,8 @@ echo "#282828
 #8ec07c
 #ebdbb2
 " > colores
-setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32
 setvtrgb colores
+setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32
 clear
 timedatectl set-ntp true
 umount /mnt >/dev/null 2>/dev/null
@@ -57,7 +57,7 @@ mount "/dev/$sistema" /mnt
 
 whiptail --infobox "Iniciando instalanción de paquetes esenciales." 16 60
 pacstrap -K /mnt base base-devel linux linux-firmware \
-	dhcpcd networkmanager git neovim \
+	networkmanager git neovim \
 	dosfstools ntfs-3g \
 	grub efibootmgr \
 	fzf exa scrot socat sxhkd sxiv tree \
@@ -70,7 +70,7 @@ pacstrap -K /mnt base base-devel linux linux-firmware \
 	noto-fonts-cjk noto-fonts-emoji otf-cascadia-code ttf-liberation gnu-free-fonts \
 	rustup linux-headers xorg xorg-xinit picom lxappearance xdg-user-dirs \
 	pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber \
-	libnotify 2>/dev/null >/dev/null &
+	libnotify >/dev/null 2>/dev/null &
 
 controlador=$(whiptail --nocancel --menu "Escoja su targeta gráfica:" 16 60 0 \
 	1 "Nvidia" \
@@ -102,7 +102,14 @@ while [ -z "$csa1" ] || [ "$csa1" != "$csa2" ]; do
 	[ "$csa1" != "$csa2" ] && whiptail --msgbox "Las contraseñas no coinciden.\n\nReinténtelo de nuevo." 16 60
 done
 
-hola=$(whiptail --checklist "Marque y desmarque con la barra espaciadora:" 0 0 0 "Valor" "Texto informativo" on "Valor2" "Hola" off 3>&1 1>&2 2>&3)
+hola=$(whiptail --title "Aplicaciones opcionales" --checklist "\nSeleccione qué aplicaciones desea tener instaladas automáticamente.\n\n(Marque y desmarque con la barra espaciadora)" 16 60 0 \
+	"Steam" "Plataforma de videojuegos" off \
+	"Discord" "Chat de voz y texto" off \
+	"Blender" "Modelado 3D" off \
+	"Gimp" "Editor dee imágenes" off \
+	"Krita" "Dibujo artístico" off \
+	"Nmap" "Escaneo de puertos" off \
+	3>&1 1>&2 2>&3)
 whiptail --infobox "Esperando a que se terminen de instalar los paquetes esenciales." 16 60
 wait
 

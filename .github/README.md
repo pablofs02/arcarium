@@ -3,6 +3,10 @@ Por defecto está el teclado estadounidense. Cámbialo al español para que sea 
 
 `loadkeys es`
 
+Si quiere una letra más grande, use el siguiente comando.
+
+`setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32`
+
 Si no tiene conexión cableada, conéctese a una red wifi.
 
 `iwctl --passphrase [contraseña] station wlan0 connect [wifi]`
@@ -19,7 +23,7 @@ Y ejecute el instalador.
 
 `./arcus`
 
-# Informar del instalador
+# Información sobre instalador
 Usar un sistema EFI de 128/256/512M y otro con todo el espacio libre disponible.
 
 Use Type y seleccione "EFI System".
