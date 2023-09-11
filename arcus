@@ -60,7 +60,7 @@ pacstrap -K /mnt base base-devel linux linux-firmware \
 	networkmanager git neovim \
 	dosfstools ntfs-3g \
 	grub efibootmgr \
-	fzf exa scrot socat sxhkd sxiv tree \
+	fzf eza scrot socat sxhkd sxiv tree \
 	mpv xclip xwallpaper zathura zathura-pdf-mupdf \
 	jq vorbis-tools unrar unzip zip \
 	alsa-utils brightnessctl clipmenu dunst \

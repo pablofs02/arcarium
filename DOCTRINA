@@ -1,3 +1,9 @@
+0 Quehaceres
+- Mantener conectividad internet.
+- Mantener fuente en reinicio.
+- Reiniciar.
+- Situar archivos de configuración.
+
 1 Pasos a seguir
 Por defecto está el teclado estadounidense. Cámbialo al español para que sea más fácil meter los comandos.
 > loadkeys es
