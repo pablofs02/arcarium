@@ -1,0 +1,25 @@
+#!/bin/sh
+export TER="st"
+export EDI="nvim"
+export NAV="firefox"
+
+export ARC="$HOME/.archivos"
+export AUD="$ARC/Audios"
+export EFE="$AUD/Efectos"
+export MUS="$AUD/Música"
+export FUN="$ARC/Funciones"
+export IMG="$ARC/Imágenes"
+export ICO="$IMG/Iconos"
+export FND="$IMG/Fondos"
+export NOT="$ARC/Notas"
+export REP="$ARC/Repos"
+export VID="$ARC/Vídeos"
+export UNI="$ARC/Universidad"
+export CFG="$HOME/.config"
+
+export WEB="/srv/http"
+
+export PATH="$PATH:$FUN"
+export EDITOR="nvim"
+export LS_COLORS="rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32"
+export EZA_COLORS="reset:un=1;31:uR=1;35:gn=1;31:gR=1;35:um=33:ug=31:ut=31:nn=31:nm=33:ng=31:nt=31:ux=32:xx=2;37:mp=34"
