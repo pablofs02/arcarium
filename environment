@@ -1,0 +1,5 @@
+ZDOTDIR=/home/pablo/.config/zsh
+XINITRC=/home/pablo/.config/xinitrc
+CARGO_HOME=/home/pablo/.local/share/cargo
+RUSTUP_HOME=/home/pablo/.local/share/rustup
+XAUTHORITY=/home/pablo/.cache/Xauthority

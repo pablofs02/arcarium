@@ -58,7 +58,7 @@ mount "/dev/$sistema" /mnt
 whiptail --infobox "Iniciando instalanción de paquetes esenciales." 16 60
 pacstrap -K /mnt base base-devel linux linux-firmware \
 	networkmanager git neovim \
-	dosfstools ntfs-3g \
+	dosfstools ntfs-3g btrfs-progs \
 	grub efibootmgr \
 	fzf eza scrot socat sxhkd sxiv tree \
 	mpv xclip xwallpaper zathura zathura-pdf-mupdf \
@@ -71,6 +71,19 @@ pacstrap -K /mnt base base-devel linux linux-firmware \
 	rustup linux-headers xorg xorg-xinit picom lxappearance xdg-user-dirs \
 	pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber \
 	libnotify >/dev/null 2>/dev/null &
+
+#[Servidor]
+#pacstrap -K /mnt base base-devel linux linux-firmware \
+	#networkmanager git neovim \
+	#dosfstools ntfs-3g btrfs-progs \
+	#grub efibootmgr \
+	#fzf eza socat tree \
+	#xclip \
+	#jq vorbis-tools unrar unzip zip \
+	#zsh zsh-syntax-highlighting dash \
+	#gparted htop inetutils net-tools \
+	#perl-image-exiftool openssh \
+	#rustup linux-headers xdg-user-dirs >/dev/null 2>/dev/null &
 
 controlador=$(whiptail --nocancel --menu "Escoja su targeta gráfica:" 16 60 0 \
 	1 "Nvidia" \

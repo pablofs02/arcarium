@@ -1,10 +1,11 @@
-# Quehaceres
+0. Quehaceres
 - Mantener conectividad internet.
 - Mantener fuente en reinicio.
 - Reiniciar.
 - Situar archivos de configuración.
 
-# Pasos a seguir
+1. Pasos a seguir
+
 Por defecto está el teclado estadounidense. Cámbialo al español para que sea más fácil meter los comandos.
 
 `loadkeys es`
@@ -29,7 +30,8 @@ Y ejecute el instalador.
 
 `./arcus`
 
-# Información sobre instalador
+2. Información sobre instalador
+
 Usar un sistema EFI de 128/256/512M y otro con todo el espacio libre disponible.
 
 Use Type y seleccione "EFI System".
