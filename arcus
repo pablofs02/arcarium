@@ -129,7 +129,7 @@ wait
 whiptail --infobox "Montando tabla del sistema de archivos" 16 60
 genfstab -U /mnt >> /mnt/etc/fstab
 
-curl -s https://raw.githubusercontent.com/pablofs02/arcus/Principal/basis > /mnt/instalador
+curl -so /mnt/instalador https://raw.githubusercontent.com/pablofs02/arcus/Principal/basis
 chmod +x /mnt/instalador
 
 echo "$arranque $usuario $nombre $csa1 $csu1 $controlador"

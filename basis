@@ -7,6 +7,26 @@ csa="$4"
 csu="$5"
 controlador="$6"
 
+# ¡CAMBIAR OWNER DESPUÉS DE CREAR USUARIO!
+curl -so etc.zip https://raw.githubusercontent.com/pablofs02/arcus/Principal/etc.zip
+unzip etc.zip
+mkdir -p /home/$usuario/.archivos
+mkdir -p /home/$usuario/.archivos/Imágenes
+mkdir -p /home/$usuario/.archivos/Imágenes/Fondos
+# AÑADIR FOTO DE FONDO POR DEFECTO
+cp etc/FOTO /home/$usuario/.archivos/Imágenes/Fondos
+ln -s /home/$usuario/.archivos/Imágenes/Fondos/FOTO /home/$usuario/.archivos/Imágenes/Fondos/actual.img
+# IMPORTANTE PONER XDG-DIRS de ETC
+cp etc/user-dirs.conf /etc/xdg/user-dirs.conf
+cp -r etc/config /home/$usuario/.config
+chown -R $usuario:$usuario /home/$usuario/.config
+cp -r etc/Funciones /home/$usuario/.archivos/Funciones
+chown -R $usuario:$usuario /home/$usuario/.archivos/Funciones
+# ¡CAMBIAR USUARIOS EN ARCHIVOS COMO ENVIROMENT!
+cp -f etc/enviroment /etc/environment
+cp -f etc/grub /etc/default/grub
+cp etc/profile.d/* /etc/profile.d
+
 whiptail --infobox "Montando sistema de arranque." 10 60
 mkdir -p /boot/efi
 mount "/dev/$arranque" /boot/efi
