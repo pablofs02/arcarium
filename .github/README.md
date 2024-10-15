@@ -1,4 +1,8 @@
 0. Quehaceres
+- Cambiar dueño de archivos de usuarios.
+- Forzar copia de archivos de configuración (etc).
+- Configurar sudoers.
+- PONER X11 configuración.
 - Mantener conectividad internet.
 - Mantener fuente en reinicio.
 - Reiniciar.

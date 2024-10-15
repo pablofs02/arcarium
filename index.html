@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang=es>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" href="/recursos/logo.svg">
+	<link rel="stylesheet" href="/recursos/css/principal.css">
+	<title>Miso</title>
+</head>
+<body>
+	<main>
+		<article>
+			<h1>Miso</h1>
+			<p>/ <a href="/">Índice</a> / <a href="/miso/">Miso</a></p>
+			<section>
+				<h2 id="Quehaceres">Quehaceres</h2>
+				<ul>
+					<li>Cambiar dueño de archivos de usuarios.</li>
+					<li>Forzar copia de archivos de configuración (etc).</li>
+					<li>Configurar sudoers.</li>
+					<li>PONER X11 configuración.</li>
+					<li>Mantener conectividad internet.</li>
+					<li>Mantener fuente en reinicio.</li>
+					<li>Reiniciar.</li>
+					<li>Situar archivos de configuración.</li>
+				</ul>
+			</section>
+			<section>
+				<h2 id="1">1. Instalación</h2>
+				<p>Por defecto está el teclado estadounidense. Cámbialo al español para que sea más fácil meter los comandos.</p>
+				<pre><code class="sh"><span class="usr">$</span> <span class="prg">loadkeys</span> <span>es</span></code></pre>
+				<p>Si quiere una letra más grande, use el siguiente comando.</p>
+				<pre><code class="sh"><span class="usr">$</span> <span class="prg">setfont</span> <span>/usr/share/kbd/consolefonts/latarcyrheb-sun32</span></code></pre>
+				<p>Si no tiene conexión cableada, conéctese a una red wifi.</p>
+				<pre><code class="sh"><span class="usr">$</span> <span class="prg">iwctl</span> <span class="arg">--passphrase</span> <span>[contraseña]</span> <span>station</span> <span>wlan0</span> <span>connect</span> <span>[wifi]</span></code></pre>
+				<p>Bájese el archivo de instalación en la máquina local.</p>
+				<pre><code class="sh"><span class="usr">$</span> <span class="prg">curl</span> <span>https://raw.githubusercontent.com/pablofs02/arcus/Principal/arcus</span> <span class="smb">&gt;</span> <span>arcus</span></code></pre>
+				<p>Dele permisos de ejecución.</p>
+				<pre><code class="sh"><span class="usr">$</span> <span class="prg">chmod</span> <span>+x</span> <span>arcus</span></code></pre>
+				<p>Y ejecute el instalador.</p>
+				<pre><code class="sh"><span class="usr">$</span> <span class="prg">./arcus</span></code></pre>
+			</section>
+			<section>
+				<h2 id="2">2. Información sobre instalador</h2>
+				<p>Usar un sistema EFI de 128/256/512M y otro con todo el espacio libre disponible.</p>
+				<p>Use Type y seleccione "EFI System".</p>
+				<p>Use "Write" y escriba 'yes' y salga con 'Quit'.</p>
+			</section>
+		</article>
+	</main>
+</body>
+</html>

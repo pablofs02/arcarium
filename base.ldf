@@ -1,10 +1,18 @@
+[Miso]
+
+/ [Índice]@/ / [Miso]@/miso/
+
 0. Quehaceres
+- Cambiar dueño de archivos de usuarios.
+- Forzar copia de archivos de configuración (etc).
+- Configurar sudoers.
+- PONER X11 configuración.
 - Mantener conectividad internet.
 - Mantener fuente en reinicio.
 - Reiniciar.
 - Situar archivos de configuración.
 
-1. Pasos a seguir
+1. Instalación
 Por defecto está el teclado estadounidense. Cámbialo al español para que sea más fácil meter los comandos.
 > loadkeys es
 Si quiere una letra más grande, use el siguiente comando.

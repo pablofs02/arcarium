@@ -22,19 +22,7 @@ setvtrgb colores
 setfont /usr/share/kbd/consolefonts/latarcyrheb-sun32
 clear
 timedatectl set-ntp true
-umount /mnt >/dev/null 2>/dev/null
-
-#ping -c 1 google.com || (iwctl station wlan0 get-networks &&
-	#read -p "Red: " red
-	#read -p "Contraseña: " cs
-	#iwctl --passphrase "$red" station wlan0 connect "$cs")
-
-ping -c 1 google.com >/dev/null || (whiptail --title "ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 16 60 && exit)
-pacman -Sy >/dev/null &
-
-discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}')
-disco=$(whiptail --nocancel --menu "Escoja el disco donde se instalará arcus:" 16 60 0 $discos 3>&1 1>&2 2>&3)
-cfdisk "/dev/$disco" && sleep 0.1
+umount /mnt >/dev/null 2>/dev/null #ping -c 1 google.com || (iwctl station wlan0 get-networks && #read -p "Red: " red #read -p "Contraseña: " cs #iwctl --passphrase "$red" station wlan0 connect "$cs") ping -c 1 google.com >/dev/null || (whiptail --title "ERROR" --msgbox "\nNo tienes conexión a internet.\n\nPara instalar el sistema operativo es necesario estar conectado a internet.\n\nPara conectarse a una red wifi use el comando:\n> iwctl --passphrase *contraseña* station wlan0 connect *wifi*\n\nPara una red cableada simplemente conecte la computadora con un cable ethernet." 16 60 && exit) pacman -Sy >/dev/null & discos=$(lsblk -l | grep "disk" | awk '{print $1" "$4}') disco=$(whiptail --nocancel --menu "Escoja el disco donde se instalará arcus:" 16 60 0 $discos 3>&1 1>&2 2>&3) cfdisk "/dev/$disco" && sleep 0.1
 
 discos=$(lsblk -l | grep "part" | awk '{print $1" "$4}')
 while [ -z "$arranque" ] || [ -z "$sistema" ] || [ "$arranque" = "$sistema" ]; do
@@ -115,7 +103,7 @@ while [ -z "$csa1" ] || [ "$csa1" != "$csa2" ]; do
 	[ "$csa1" != "$csa2" ] && whiptail --msgbox "Las contraseñas no coinciden.\n\nReinténtelo de nuevo." 16 60
 done
 
-hola=$(whiptail --title "Aplicaciones opcionales" --checklist "\nSeleccione qué aplicaciones desea tener instaladas automáticamente.\n\n(Marque y desmarque con la barra espaciadora)" 16 60 0 \
+hola=$(whiptail --title "Aplicaciones opcionales" --checklist "\nMarque las aplicaciones que desea tener instaladas automáticamente.\n\n(Marque y desmarque con la barra espaciadora)" 16 60 0 \
 	"Steam" "Plataforma de videojuegos" off \
 	"Discord" "Chat de voz y texto" off \
 	"Blender" "Modelado 3D" off \
